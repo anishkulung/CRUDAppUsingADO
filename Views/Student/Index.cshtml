@@ -25,11 +25,12 @@
         <td>@p.Address</td>
         <td>@p.PhoneNumber</td>
         <td><a asp-action="Update" asp-route-id="@p.Id">Update</a></td>
-        <td>
-            <form asp-action="Delete" method="post" asp-route-id="@p.Id">
+        <td><a asp-action="Delete" asp-route-id="@p.Id">Delete</a></td>
+        @*<td>
+            <form asp-action="Delete" asp-route-id="@p.Id">
                 <button>Delete</button>
             </form>
-        </td>
+        </td>*@
     </tr>
             }
         }

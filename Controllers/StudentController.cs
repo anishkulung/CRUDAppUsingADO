@@ -92,8 +92,7 @@ namespace CRUDUsingADOApp.Controllers {
         }
 
         [HttpPost]
-        [ActionName("Update")]
-        public IActionResult Update_Post(StudentInformation student) {
+        public IActionResult Update(StudentInformation student) {
             string connectionString = Configuration["ConnectionStrings:DefaultConnection"];
             using (SqlConnection connection = new SqlConnection(connectionString)) {
                 string sql = $"Update StudentInfo SET FullName='{student.FullName}', Batch='{student.Batch}', Faculty='{student.Faculty}', Address='{student.Address}',PhoneNumber='{student.PhoneNumber}' Where Id='{student.Id}'";
@@ -106,12 +105,38 @@ namespace CRUDUsingADOApp.Controllers {
 
             return RedirectToAction("Index");
         }
-
-        [HttpPost]
+        [HttpGet]
         public IActionResult Delete(int id) {
             string connectionString = Configuration["ConnectionStrings:DefaultConnection"];
+
+            StudentInformation student = new StudentInformation();
             using (SqlConnection connection = new SqlConnection(connectionString)) {
-                string sql = $"Delete From StudentInfo Where Id='{id}'";
+                string sql = $"Select * From StudentInfo Where Id='{id}'";
+                SqlCommand command = new SqlCommand(sql, connection);
+
+                connection.Open();
+
+                using (SqlDataReader dataReader = command.ExecuteReader()) {
+                    while (dataReader.Read()) {
+                        student.Id = Convert.ToInt32(dataReader["Id"]);
+                        student.FullName = Convert.ToString(dataReader["FullName"]);
+                        student.Batch = Convert.ToInt32(dataReader["Batch"]);
+                        student.Faculty = Convert.ToString(dataReader["Faculty"]);
+                        student.Address = Convert.ToString(dataReader["Address"]);
+                        student.PhoneNumber = Convert.ToString(dataReader["PhoneNumber"]);
+                    }
+                }
+
+                connection.Close();
+            }
+            return View(student);
+        }
+
+        [HttpPost]
+        public IActionResult Delete(StudentInformation student) {
+            string connectionString = Configuration["ConnectionStrings:DefaultConnection"];
+            using (SqlConnection connection = new SqlConnection(connectionString)) {
+                string sql = $"Delete From StudentInfo Where Id='{student.Id}'";
                 using (SqlCommand command = new SqlCommand(sql, connection)) {
                     connection.Open();
                     try {
